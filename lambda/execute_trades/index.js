@@ -38,8 +38,8 @@ async function fetchRedditPost() {
   const json = await response.json();
   //get the newest post that contains the string "What Are Your Moves Tomorrow"
   const latestPost = json.data.children.find((post) => {
-    return post.data.title?.includes("What Are Your Moves Tomorrow");
-  })?.data;
+    return post.data.title.includes("What Are Your Moves Tomorrow");
+  }).data;
 
   if (!latestPost) throw new Error("No post found!");
 
@@ -61,7 +61,7 @@ function generateCommentsString(redditPostComments) {
     if (commentString.length > 10000) {
       return;
     }
-    let currentComment = comment?.data?.body;
+    let currentComment = comment.data.body;
     if (!currentComment) {
       return;
     }
@@ -126,7 +126,7 @@ async function start() {
   console.log("Symbol: ", ticker);
 
   const portfolio = await AlpacaClient.getPositions();
-  const previousStockTicker = portfolio[0]?.symbol;
+  const previousStockTicker = portfolio[0].symbol;
   var isHolding = true;
   if (ticker !== previousStockTicker) {
     isHolding = false;
