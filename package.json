@@ -25,6 +25,7 @@
     "node-cron": "^3.0.2",
     "node-fetch": "2.0",
     "pg-escape": "^0.2.0",
+    "pigpio": "^3.3.1",
     "puppeteer": "^13.5.1"
   }
 }

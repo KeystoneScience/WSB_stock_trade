@@ -7,7 +7,7 @@ import ExecuteTrades from "./lambda/execute_trades/index.js";
 import UpdateS3 from "./lambda/updateS3/index.js";
 
 async function main() {
-  await ExecuteTrades.start();
+  // await ExecuteTrades.start();
   await UpdateS3.start();
   // cron.schedule(
   //   "0 9 * * 1-5",

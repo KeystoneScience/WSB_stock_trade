@@ -2,6 +2,8 @@ import AWS from "aws-sdk";
 import { readFile } from "fs/promises";
 import AlpacaClient from "../../utilities/AlpacaClient.mjs";
 import dotenv from "dotenv";
+import pigpio from "pigpio";
+const { Gpio } = pigpio;
 dotenv.config();
 
 AWS.config.update({
@@ -52,7 +54,30 @@ async function start() {
   const positions = await AlpacaClient.getPositions();
   const dayScaleHistory = await AlpacaClient.getDayScalePortfolioHistory();
   const items = formatJSONForS3({ orderHistory, positions, dayScaleHistory });
+  updateLEDIndicator(items);
   executeUpload({ items: items, bucket: "wsbdata", S3Path: "orders.json" });
+}
+
+async function updateLEDIndicator({ profit_loss_pct }) {
+  const redLed = new Gpio(4, { mode: Gpio.OUTPUT });
+  const greenLed = new Gpio(17, { mode: Gpio.OUTPUT });
+  const blueLed = new Gpio(27, { mode: Gpio.OUTPUT });
+
+  const MAX_POWER = 150;
+
+  const IS_LOSS = profit_loss_pct[profit_loss_pct.length - 1] < 0;
+
+  if (IS_LOSS) {
+    //make the led red
+    redLed.pwmWrite(MAX_POWER);
+    greenLed.pwmWrite(0);
+    blueLed.pwmWrite(0);
+  } else {
+    //make the led green
+    redLed.pwmWrite(0);
+    greenLed.pwmWrite(MAX_POWER);
+    blueLed.pwmWrite(0);
+  }
 }
 
 function formatJSONForS3({ orderHistory, positions, dayScaleHistory }) {
